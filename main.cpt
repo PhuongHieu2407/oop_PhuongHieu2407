@@ -18,8 +18,8 @@ class Vehicle {
 private:
     int vehicleID;
     std::string vehicleType;
-    int entryTime;        // 0 -> 23
-    int parkingDuration;  // Số giờ đỗ
+    int entryTime;        
+    int parkingDuration; 
     double parkingFee;
     bool isOccupied;
 
@@ -53,15 +53,14 @@ public:
         else if (vehicleType == "bicycle") baseFee = 2.00;
 
         double totalFee = 0.0;
-        // Tính phí cho từng giờ đỗ
+    
         for (int h = 0; h < parkingDuration; ++h) {
             int currentHour = (entryTime + h) % 24;
             
-            // Giờ cao điểm: 6-9h và 15-18h (+30%)
             bool isPeak = (currentHour >= 6 && currentHour <= 9) || (currentHour >= 15 && currentHour <= 18);
             double hourlyFee = isPeak ? (baseFee * 1.30) : (baseFee * 0.95);
 
-            // Giảm giá 10% từ giờ thứ 3 trở đi
+           
             if (h >= 2) {
                 hourlyFee *= 0.90;
             }
@@ -254,7 +253,7 @@ public:
                 }
                 break;
             }
-            case 6: { // Xem danh sách xe trong 1 bãi xe
+            case 6: { 
                 int pID;
                 std::cout << "Nhap ParkID: ";
                 std::cin >> pID;
@@ -287,7 +286,7 @@ public:
                 if (!found) std::cout << "Khong tim thay xe loai " << type << "\n";
                 break;
             }
-            case 8: { // Thống kê doanh thu
+            case 8: { 
                 double carRevenue = 0, motoRevenue = 0, bikeRevenue = 0;
                 for (const auto& lot : lots) {
                     for (auto v : lot.getVehicles()) {
