@@ -1,375 +1,144 @@
-#include <iostream>
-#include <cmath>
-#include <algorithm>
-#include <iomanip>
-#include <cctype>
-#include <string>
-
-
-std::string tolowerstring(std::string n) {
-    std::string lower = "";
-    for (int i = 0; i < (int)n.length(); ++i) {
-        lower += std::tolower(n[i]);
-    }
-    return lower;
+class phuong_tien{
+private:
+    int ma_xe;
+    string loai_xe;
+    int gio_vao;
+    int tg_do;
+public:
+    phuong_tien();
+    phuong_tien(int ma,string loai,int gio,int tg);
+    int lay_ma_xe() const;
+    string lay_loai_xe() const;
+    double tinh_phi() const;
+    void hien_thi()const;
+};
+phuong_tien::phuong_tien() {
+    ma_xe = 0;
+    loai_xe = "";
+    gio_vao = 0;
+    tg_do = 0;
 }
 
+phuong_tien::phuong_tien(int ma, string loai, int gio, int tg) {
+    ma_xe = ma;
+    loai_xe = loai;
+    gio_vao = gio;
+    tg_do = tg;
+}
 
-class Vehicle {
+int phuong_tien::lay_ma_xe() const {
+    return ma_xe;
+}
+
+string phuong_tien::lay_loai_xe() const {
+    return loai_xe;
+}
+double phuong_tien::don_gia() const {
+    if (loai_xe == "xe_may") {
+        return don_gia==4;
+    } else if (loai_xe == "o_to") {
+        return don_gia==6;
+    } else if (loai_xe == "xe_dap") {
+        return don_gia==2;
+    }else{
+        return;
+    }
+}
+double phuong_tien::tinh_phi()
+class bai_xe {
 private:
-    int vehicleID;
-    std::string vehicleType;
-    int entryTime;
-    int parkingDuration;
-    double parkingFee;
-    bool isOccupied;
+    int ma_bai;
+    char kich_thuoc;
+    phuong_tien pt1, pt2, pt3; 
+    bool co1, co2, co3;
 
 public:
-    Vehicle() {
-        vehicleID = 0;
-        vehicleType = "";
-        entryTime = 0;
-        parkingDuration = 0;
-        parkingFee = 0.0;
-        isOccupied = false;
-    }
+    bai_xe();
+    bai_xe(int ma, char kt);
 
-    Vehicle(int id, std::string type, int entry, int duration) {
-        vehicleID = id;
-        std::string lowerType = tolowerstring(type);
-        if (lowerType == "car" || lowerType == "motorcycle" || lowerType == "bicycle") {
-            vehicleType = lowerType;
-        } else {
-            vehicleType = "unknown";
-        }
-        entryTime = (entry >= 0 && entry <= 23) ? entry : 0;
-        parkingDuration = (duration > 0) ? duration : 1;
-        parkingFee = 0.0;
-        isOccupied = true;
-    }
-
-    int getVehicleID() const { return vehicleID; }
-    std::string getVehicleType() const { return vehicleType; }
-    int getEntryTime() const { return entryTime; }
-    int getParkingDuration() const { return parkingDuration; }
-    bool getIsOccupied() const { return isOccupied; }
-    void setOccupied(bool status) { isOccupied = status; }
-
-    double calculateFee() {
-        if (!isOccupied) return 0.0;
-        double baseFee = 0.0;
-        if (vehicleType == "car") baseFee = 6.00;
-        else if (vehicleType == "motorcycle") baseFee = 4.00;
-        else if (vehicleType == "bicycle") baseFee = 2.00;
-
-        double totalFee = 0.0;
-        for (int h = 0; h < parkingDuration; ++h) {
-            int currentHour = (entryTime + h) % 24;
-            bool isPeak = (currentHour >= 6 && currentHour <= 9) || (currentHour >= 15 && currentHour <= 18);
-            double hourlyFee = isPeak ? (baseFee * 1.30) : (baseFee * 0.95);
-
-            if (h >= 2) {
-                hourlyFee *= 0.90; 
-            }
-            totalFee += hourlyFee;
-        }
-        parkingFee = totalFee;
-        return parkingFee;
-    }
-
-    void hienthi() {
-        if (!isOccupied) return;
-        std::cout << "    [Xe ID: " << vehicleID 
-                  << " | Loai: " << vehicleType 
-                  << " | Gio vao: " << entryTime << "h"
-                  << " | Thoi gian do: " << parkingDuration << "h"
-                  << " | Phi: $" << std::fixed << std::setprecision(2) << calculateFee() << "]\n";
-    }
+    int lay_ma() const;
+    bool them(phuong_tien v);
+    bool xoa(int ma_xe);
+    bool chua(int ma_xe) const;
+    void hien_thi() const;
+    bool co_loai(string loai, int& dem, double& tong) const;
 };
+bool bai_xe::them(phuong_tien v) {
+ int cap = (kich_thuoc == 'S') ? 1 : (kich_thuoc == 'M') ? 2 : 3;
+ if (cap >= 1 && !co1) { pt1 = v; co1 = true; return true; }
+ if (cap >= 2 && !co2) { pt2 = v; co2 = true; return true; }
+ if (cap >= 3 && !co3) { pt3 = v; co3 = true; return true; }
+ return false;
+}
 
+bool bai_xe::xoa(int ma_xe) {
+ if (co1 && pt1.lay_ma_xe() == ma_xe) {
+ if (co2) {
+ pt1 = pt2;
+ if (co3) { pt2 = pt3; co3 = false; }
+ else co2 = false;
+ } else co1 = false;
+ return true;
+ }
+ if (co2 && pt2.lay_ma_xe() == ma_xe) {
+ if (co3) { pt2 = pt3; co3 = false; }
+ else co2 = false;
+ return true;
+ }
+ if (co3 && pt3.lay_ma_xe() == ma_xe) {
+ co3 = false;
+ return true;
+ }
+ return false;
+}
 
-class ParkingLot {
-private:
-    int parkID;
-    char size;
-    bool isCreated; // Kiểm tra bãi này đã khởi tạo chưa
-    Vehicle vehicle1, vehicle2, vehicle3;
+bool bai_xe::chua(int ma_xe) const {
+ if (co1 && pt1.lay_ma_xe() == ma_xe) return true;
+ if (co2 && pt2.lay_ma_xe() == ma_xe) return true;
+ if (co3 && pt3.lay_ma_xe() == ma_xe) return true;
+ return false;
+}
 
-public:
-    ParkingLot() {
-        parkID = 0;
-        size = ' ';
-        isCreated = false;
-    }
+void bai_xe::hien_thi() const {
+ int cap = (kich_thuoc == 'S') ? 1 : (kich_thuoc == 'M') ? 2 : 3;
+ int so_xe = co1 + co2 + co3;
+ cout << "Bai " << ma_bai << " [" << kich_thuoc << "] "
+ << so_xe << "/" << cap << " xe\n";
+ if (co1) pt1.hien_thi();
+ if (co2) pt2.hien_thi();
+ if (co3) pt3.hien_thi();
+}
 
-    ParkingLot(int id, char s) {
-        parkID = id;
-        size = std::toupper(s);
-        isCreated = true;
-    }
-
-    int getParkID() const { return parkID; }
-    char getSize() const { return size; }
-    bool getIsCreated() const { return isCreated; }
-    void setCreated(bool status) { isCreated = status; }
-
-    int getCapacity() const {
-        if (size == 'S') return 1;
-        if (size == 'M') return 2;
-        if (size == 'L') return 3;
-        return 0;
-    }
-
-    int getVehicleCount() const {
-        int count = 0;
-        if (vehicle1.getIsOccupied()) count++;
-        if (vehicle2.getIsOccupied()) count++;
-        if (vehicle3.getIsOccupied()) count++;
-        return count;
-    }
-
-    bool addVehicle(const Vehicle& v) {
-        if (!isCreated) return false;
-        int cap = getCapacity();
-        
-        if (cap >= 1 && !vehicle1.getIsOccupied()) {
-            vehicle1 = v;
-            return true;
-        }
-        if (cap >= 2 && !vehicle2.getIsOccupied()) {
-            vehicle2 = v;
-            return true;
-        }
-        if (cap >= 3 && !vehicle3.getIsOccupied()) {
-            vehicle3 = v;
-            return true;
-        }
-        return false;
-    }
-
-    bool removeVehicle(int vID) {
-        if (!isCreated) return false;
-        if (vehicle1.getIsOccupied() && vehicle1.getVehicleID() == vID) {
-            vehicle1.setOccupied(false);
-            return true;
-        }
-        if (vehicle2.getIsOccupied() && vehicle2.getVehicleID() == vID) {
-            vehicle2.setOccupied(false);
-            return true;
-        }
-        if (vehicle3.getIsOccupied() && vehicle3.getVehicleID() == vID) {
-            vehicle3.setOccupied(false);
-            return true;
-        }
-        return false;
-    }
-
-    void displayLotInfo() {
-        if (!isCreated) return;
-        std::cout << "Bai xe ID: " << parkID << " | Size: " << size 
-                  << " | Suc chua: " << getVehicleCount() << "/" << getCapacity() << "\n";
-        if (vehicle1.getIsOccupied()) vehicle1.hienthi();
-        if (vehicle2.getIsOccupied()) vehicle2.hienthi();
-        if (vehicle3.getIsOccupied()) vehicle3.hienthi();
-    }
-
-
-    void searchByType(const std::string& type) {
-        if (!isCreated) return;
-        if (vehicle1.getIsOccupied() && vehicle1.getVehicleType() == type) {
-            std::cout << "Tim thay o Bai XE ID " << parkID << " -> "; vehicle1.hienthi();
-        }
-        if (vehicle2.getIsOccupied() && vehicle2.getVehicleType() == type) {
-            std::cout << "Tim thay o Bai XE ID " << parkID << " -> "; vehicle2.hienthi();
-        }
-        if (vehicle3.getIsOccupied() && vehicle3.getVehicleType() == type) {
-            std::cout << "Tim thay o Bai XE ID " << parkID << " -> "; vehicle3.hienthi();
-        }
-    }
-
-    double getRevenueByType(const std::string& type) {
-        if (!isCreated) return 0.0;
-        double sum = 0.0;
-        if (vehicle1.getIsOccupied() && vehicle1.getVehicleType() == type) sum += vehicle1.calculateFee();
-        if (vehicle2.getIsOccupied() && vehicle2.getVehicleType() == type) sum += vehicle2.calculateFee();
-        if (vehicle3.getIsOccupied() && vehicle3.getVehicleType() == type) sum += vehicle3.calculateFee();
-        return sum;
-    }
-};
-
-
+bool bai_xe::co_loai(string loai, int& dem, double& tong) const {
+ dem = 0; tong = 0;
+ if (co1 && pt1.lay_loai_xe() == loai) { ++dem; tong += pt1.tinh_phi(); }
+ if (co2 && pt2.lay_loai_xe() == loai) { ++dem; tong += pt2.tinh_phi(); }
+ if (co3 && pt3.lay_loai_xe() == loai) { ++dem; tong += pt3.tinh_phi(); }
+ return dem > 0;
+}
 class SystemInterface {
 private:
-    ParkingLot lot1, lot2, lot3;
+    bai_xe bai1, bai2, bai3;
+    bool co1, co2, co3;  
 
 public:
-    void printMenu() {
-        std::cout << "\n========== QUAN LY BAI DO XE ==========\n"
-                  << "1. Them bai do xe moi\n"
-                  << "2. Them xe vao bai\n"
-                  << "3. Xoa bai do xe theo ID\n"
-                  << "4. Xoa xe khoi bai theo ID xe\n"
-                  << "5. Hien thi thong tin tat ca bai xe\n"
-                  << "6. Xem danh sach xe trong 1 bai xe\n"
-                  << "7. Tim xe theo loai xe\n"
-                  << "8. Thong ke tong doanh thu theo loai xe\n"
-                  << "9. Thoat\n"
-                  << "Lua chon cua ban: ";
-    }
-
-    void runMenu() {
-        int choice;
-        do {
-            printMenu();
-            if (!(std::cin >> choice)) {
-                std::cin.clear();
-                std::cin.ignore(1000, '\n');
-                continue;
-            }
-
-            switch (choice) {
-            case 1: { // Thêm bãi xe
-                int id;
-                char size;
-                std::cout << "Nhap ID bai xe: ";
-                std::cin >> id;
-
-               
-                if ((lot1.getIsCreated() && lot1.getParkID() == id) ||
-                    (lot2.getIsCreated() && lot2.getParkID() == id) ||
-                    (lot3.getIsCreated() && lot3.getParkID() == id)) {
-                    std::cout << "ID bai xe da ton tai!\n";
-                    break;
-                }
-
-                std::cout << "Nhap Size (S/M/L): ";
-                std::cin >> size;
-
-                if (!lot1.getIsCreated()) {
-                    lot1 = ParkingLot(id, size);
-                    std::cout << "Them vao Lot 1 thanh cong!\n";
-                } else if (!lot2.getIsCreated()) {
-                    lot2 = ParkingLot(id, size);
-                    std::cout << "Them vao Lot 2 thanh cong!\n";
-                } else if (!lot3.getIsCreated()) {
-                    lot3 = ParkingLot(id, size);
-                    std::cout << "Them vao Lot 3 thanh cong!\n";
-                } else {
-                    std::cout << "Da dat toi da 3 bai xe!\n";
-                }
-                break;
-            }
-            case 2: { 
-                if (!lot1.getIsCreated() && !lot2.getIsCreated() && !lot3.getIsCreated()) {
-                    std::cout << "Chua co bai xe nao!\n";
-                    break;
-                }
-                int vID, entry, duration;
-                std::string type;
-                std::cout << "Nhap ID xe: "; std::cin >> vID;
-                std::cout << "Nhap loai xe (car/motorcycle/bicycle): "; std::cin >> type;
-                std::cout << "Nhap gio vao (0-23): "; std::cin >> entry;
-                std::cout << "Nhap thoi gian do (gio): "; std::cin >> duration;
-
-                Vehicle v(vID, type, entry, duration);
-
-                if (lot1.addVehicle(v)) {
-                    std::cout << "Da them xe vao Bai xe ID: " << lot1.getParkID() << "\n";
-                } else if (lot2.addVehicle(v)) {
-                    std::cout << "Da them xe vao Bai xe ID: " << lot2.getParkID() << "\n";
-                } else if (lot3.addVehicle(v)) {
-                    std::cout << "Da them xe vao Bai xe ID: " << lot3.getParkID() << "\n";
-                } else {
-                    std::cout << "Tat ca cac bai xe hien tai deu da day!\n";
-                }
-                break;
-            }
-            case 3: { 
-                int pID;
-                std::cout << "Nhap ParkID can xoa: ";
-                std::cin >> pID;
-                if (lot1.getIsCreated() && lot1.getParkID() == pID) {
-                    lot1.setCreated(false);
-                    std::cout << "Da xoa bai xe ID " << pID << "\n";
-                } else if (lot2.getIsCreated() && lot2.getParkID() == pID) {
-                    lot2.setCreated(false);
-                    std::cout << "Da xoa bai xe ID " << pID << "\n";
-                } else if (lot3.getIsCreated() && lot3.getParkID() == pID) {
-                    lot3.setCreated(false);
-                    std::cout << "Da xoa bai xe ID " << pID << "\n";
-                } else {
-                    std::cout << "Khong tim thay bai xe!\n";
-                }
-                break;
-            }
-            case 4: { 
-                int vID;
-                std::cout << "Nhap ID xe can xoa: ";
-                std::cin >> vID;
-                if (lot1.removeVehicle(vID)) {
-                    std::cout << "Da xoa xe ID " << vID << " khoi bai ID " << lot1.getParkID() << "\n";
-                } else if (lot2.removeVehicle(vID)) {
-                    std::cout << "Da xoa xe ID " << vID << " khoi bai ID " << lot2.getParkID() << "\n";
-                } else if (lot3.removeVehicle(vID)) {
-                    std::cout << "Da xoa xe ID " << vID << " khoi bai ID " << lot3.getParkID() << "\n";
-                } else {
-                    std::cout << "Khong tim thay xe!\n";
-                }
-                break;
-            }
-            case 5: { 
-                if (!lot1.getIsCreated() && !lot2.getIsCreated() && !lot3.getIsCreated()) {
-                    std::cout << "Chua co bai xe nao trong he thong.\n";
-                } else {
-                    lot1.displayLotInfo();
-                    lot2.displayLotInfo();
-                    lot3.displayLotInfo();
-                }
-                break;
-            }
-            case 6: { 
-                int pID;
-                std::cout << "Nhap ParkID: ";
-                std::cin >> pID;
-                if (lot1.getIsCreated() && lot1.getParkID() == pID) lot1.displayLotInfo();
-                else if (lot2.getIsCreated() && lot2.getParkID() == pID) lot2.displayLotInfo();
-                else if (lot3.getIsCreated() && lot3.getParkID() == pID) lot3.displayLotInfo();
-                else std::cout << "Khong tim thay bai xe!\n";
-                break;
-            }
-            case 7: { 
-                std::string type;
-                std::cout << "Nhap loai xe can tim: ";
-                std::cin >> type;
-                type = tolowerstring(type);
-                lot1.searchByType(type);
-                lot2.searchByType(type);
-                lot3.searchByType(type);
-                break;
-            }
-            case 8: { 
-                double carRevenue = lot1.getRevenueByType("car") + lot2.getRevenueByType("car") + lot3.getRevenueByType("car");
-                double motoRevenue = lot1.getRevenueByType("motorcycle") + lot2.getRevenueByType("motorcycle") + lot3.getRevenueByType("motorcycle");
-                double bikeRevenue = lot1.getRevenueByType("bicycle") + lot2.getRevenueByType("bicycle") + lot3.getRevenueByType("bicycle");
-
-                std::cout << "\n--- THONG KE DOANH THU ---\n";
-                std::cout << "Car        : $" << std::fixed << std::setprecision(2) << carRevenue << "\n";
-                std::cout << "Motorcycle : $" << std::fixed << std::setprecision(2) << motoRevenue << "\n";
-                std::cout << "Bicycle    : $" << std::fixed << std::setprecision(2) << bikeRevenue << "\n";
-                break;
-            }
-            case 9:
-                std::cout << "Tam biet!\n";
-                break;
-            default:
-                std::cout << "Lua chon khong hop le!\n";
-            }
-        } while (choice != 9);
-    }
+    SystemInterface();
+    void runMenu();
 };
+void SystemInterface::runMenu() {
+ int chon;
+ while (true) {
+ cout << "\n===== QUAN LY BAI DO XE =====\n";
+ cout << "1. Tao bai do\n";
+ cout << "2. Them xe\n";
+ cout << "3. Xoa bai do\n";
+ cout << "4. Lay xe ra\n";
+ cout << "5. Hien thi tat ca bai do\n";
+ cout << "6. Hien thi xe theo bai\n";
+ cout << "7. Liet ke xe theo loai\n";
+ cout << "8. Bao cao phi trung binh\n";
+ cout << "9. Thoat\n";
+ cout << "Chon: ";
+ cin >> chon;
 
-int main() {
-    SystemInterface system;
-    system.runMenu();
-    return 0;
-}
+ if (chon == 1) {
